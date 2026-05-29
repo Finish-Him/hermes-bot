@@ -6,13 +6,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-kvm1:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
     
-    - name: Deploy to KVM1
+    - name: Deploy to KVM1 (Detran)
       env:
         VPS_HOST: 187.77.37.158
         VPS_USER: root
@@ -20,14 +19,34 @@ jobs:
       run: |
         echo "$DEPLOY_KEY" > /tmp/deploy_key
         chmod 600 /tmp/deploy_key
-        
         mkdir -p ~/.ssh
         ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts 2>/dev/null
-        
         ssh -o StrictHostKeyChecking=no -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
           cd /opt/hermes-bot
           git pull origin main
           systemctl restart hermes-bot
-          echo '✅ Deployed from GitHub Actions!'
+          echo '✅ KVM1 Deployed!'
+        "
+
+  deploy-kvm2:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to KVM2 (MSC) via IPv6
+      env:
+        VPS_HOST: 2a02:4780:2d:e531::1
+        VPS_USER: root
+        DEPLOY_KEY: ${{ secrets.KVM2_DEPLOY_KEY }}
+      run: |
+        echo "$DEPLOY_KEY" > /tmp/deploy_key
+        chmod 600 /tmp/deploy_key
+        mkdir -p ~/.ssh
+        ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts 2>/dev/null
+        ssh -o StrictHostKeyChecking=no -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
+          cd /opt/hermes-bot
+          git pull origin main
+          systemctl restart hermes-bot
+          echo '✅ KVM2 Deployed!'
           systemctl status hermes-bot --no-pager -n 3
         "
