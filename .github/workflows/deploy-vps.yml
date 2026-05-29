@@ -21,11 +21,9 @@ jobs:
         echo "$DEPLOY_KEY" > /tmp/deploy_key
         chmod 600 /tmp/deploy_key
         
-        # Add host to known_hosts
         mkdir -p ~/.ssh
         ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts 2>/dev/null
         
-        # Deploy
         ssh -o StrictHostKeyChecking=no -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
           cd /opt/hermes-bot
           git pull origin main
