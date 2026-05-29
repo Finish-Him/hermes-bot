@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
     
     steps:
@@ -21,8 +21,20 @@ jobs:
       run: |
         pip install -r requirements.txt
     
-    - name: Run bot
-      env:
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    - name: Test bot import
       run: |
-        python hermes.py
+        python -c "from hermes import *; print('✅ Bot imports OK')"
+    
+    - name: Verify bot token
+      run: |
+        curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/getMe" | python -c "import sys,json; d=json.load(sys.stdin); print('✅ Bot:', d['result']['username'])"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: false  # Disable auto-deploy, use Railway/Render for persistent hosting
+    steps:
+    - name: Deploy to Railway
+      run: |
+        echo "For persistent hosting, deploy to Railway or Render"
+        echo "Guide: https://github.com/Finish-Him/hermes-bot#deploying"
