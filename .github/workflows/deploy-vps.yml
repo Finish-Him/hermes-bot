@@ -42,8 +42,9 @@ jobs:
         echo "$DEPLOY_KEY" > /tmp/deploy_key
         chmod 600 /tmp/deploy_key
         mkdir -p ~/.ssh
-        ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts 2>/dev/null
-        ssh -o StrictHostKeyChecking=no -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
+        # IPv6 keyscan
+        ssh-keyscan -H -6 $VPS_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+        ssh -o StrictHostKeyChecking=no -o AddressFamily=inet6 -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
           cd /opt/hermes-bot
           git pull origin main
           systemctl restart hermes-bot
