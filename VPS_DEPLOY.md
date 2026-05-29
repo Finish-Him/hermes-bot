@@ -34,3 +34,4 @@ cd /opt/hermes-bot
 - `/help` - Ajuda
 - `/ping` - Status
 - `/echo <texto>` - Repetir
+# Last deploy: sex, 29 de mai de 2026 16:48:03
