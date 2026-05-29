@@ -26,29 +26,10 @@ jobs:
           git pull origin main
           systemctl restart hermes-bot
           echo '✅ KVM1 Deployed!'
+          systemctl status hermes-bot --no-pager -n 3
         "
 
-  deploy-kvm2:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Deploy to KVM2 (MSC) via IPv6
-      env:
-        VPS_HOST: 2a02:4780:2d:e531::1
-        VPS_USER: root
-        DEPLOY_KEY: ${{ secrets.KVM2_DEPLOY_KEY }}
-      run: |
-        echo "$DEPLOY_KEY" > /tmp/deploy_key
-        chmod 600 /tmp/deploy_key
-        mkdir -p ~/.ssh
-        # Add both IPv4 and IPv6 to known_hosts
-        ssh-keyscan -H srv1654842.hstgr.cloud >> ~/.ssh/known_hosts 2>/dev/null || true
-        ssh-keyscan -H 2a02:4780:2d:e531::1 >> ~/.ssh/known_hosts 2>/dev/null || true
-        # Try with IPv6 address
-        ssh -6 -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i /tmp/deploy_key $VPS_USER@$VPS_HOST "
-          cd /opt/hermes-bot
-          git pull origin main
-          systemctl restart hermes-bot
-          echo '✅ KVM2 Deployed!'
-        "
+  # KVM2 requires manual deploy (no IPv6 from GitHub Actions)
+  # Run from local terminal:
+  # ssh -6 -o StrictHostKeyChecking=no -i ~/.ssh/msc/kvm2_ed25519 root@2a02:4780:2d:e531::1
+  # cd /opt/hermes-bot && git pull origin main && systemctl restart hermes-bot
